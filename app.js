@@ -2,6 +2,8 @@ const yargs = require('yargs');
 
 const geocode = require('./geocode/geocode');
 
+const weather = require('./weather/weather');
+
 const argv = yargs.options({
     a: {
         demand: true,
@@ -11,12 +13,18 @@ const argv = yargs.options({
     }
 }).help().alias('help', 'h').argv;
 
-//console.log(argv);
-
 geocode.geocodeAddress(argv.address, (errorMessage, result) => {
     if (errorMessage) {
         console.log(errorMessage);
     } else {
-        console.log(JSON.stringify(result, undefined, 2));
+        console.log(`Current Address is ${result.address}`);
+        weather.getWeather(result.lat, result.long, (errorWeather, resultWeather) => {
+            if (errorWeather) {
+                console.log(errorWeather);
+            } else {
+                console.log(`Current Temparature is ${resultWeather.Current}. It feels like ${resultWeather.aptTem}`);
+            }
+        });
     }
 });
+
